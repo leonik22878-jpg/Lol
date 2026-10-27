@@ -1,0 +1,66 @@
+moveX = dx / 40; moveY = dy / 40;
+        });
+        
+        jZone.addEventListener('touchend', () => {
+            jStick.style.transform = 'translate(0px, 0px)';
+            moveX = 0; moveY = 0;
+        });
+
+        // Кнопка действия
+        document.getElementById('action-btn').addEventListener('touchstart', () => {
+            let dx = player.x - nest.x;
+            let dy = player.y - nest.y;
+            if (Math.sqrt(dx*dx + dy*dy) < nest.r + player.r + 20) {
+                player.hasEgg = true;
+                document.getElementById('egg-txt').innerText = "ДА";
+            }
+        });
+
+        // Магазин
+        document.getElementById('shop-btn').addEventListener('touchstart', () => document.getElementById('shop-menu').style.display = 'block');
+        document.getElementById('close-shop').addEventListener('touchstart', () => document.getElementById('shop-menu').style.display = 'none');
+        
+        function buySpeed() {
+            if (player.coins >= 10) { player.coins -= 10; player.speed += 1; updateUI(); }
+        }
+        function updateUI() {
+            document.getElementById('coins-txt').innerText = player.coins;
+            document.getElementById('egg-txt').innerText = player.hasEgg ? "ДА" : "Нет";
+        }
+
+        // Главный цикл игры
+        function update() {
+            player.x += moveX * player.speed;
+            player.y += moveY * player.speed;
+
+            // Движение монстра по кругу вокруг гнезда
+            monster.angle += monster.speed;
+            monster.x = nest.x + Math.cos(monster.angle) * monster.dist;
+            monster.y = nest.y + Math.sin(monster.angle) * monster.dist;
+
+            // Проверка возврата на базу с яйцом
+            let dbx = player.x - base.x; let dby = player.y - base.y;
+            if (player.hasEgg && Math.sqrt(dbx*dbx + dby*dby) < base.r) {
+                player.hasEgg = false; player.coins += 5; updateUI();
+            }
+
+            // Попадание к монстру
+            let dmx = player.x - monster.x; let dmy = player.y - monster.y;
+            if (Math.sqrt(dmx*dmx + dmy*dmy) < player.r + monster.r) {
+                player.x = base.x; player.y = base.y; player.hasEgg = false; updateUI();
+            }
+
+            // Рендеринг сцены
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.2)'; ctx.beginPath(); ctx.arc(base.x, base.y, base.r, 0, Math.PI*2); ctx.fill(); // База
+            ctx.fillStyle = '#8b5a2b'; ctx.beginPath(); ctx.arc(nest.x, nest.y, nest.r, 0, Math.PI*2); ctx.fill(); // Гнездо
+            ctx.fillStyle = '#ff4757'; ctx.beginPath(); ctx.arc(monster.x, monster.y, monster.r, 0, Math.PI*2); ctx.fill(); // Монстр
+            ctx.fillStyle = player.hasEgg ? '#ffa500' : '#2ed573'; ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fill(); // Игрок
+
+            requestAnimationFrame(update);
+        }
+        update();
+    </script>
+</body>
+</html>
