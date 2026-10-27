@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.leonik.stealegg" version="1.0.0" xmlns="http://w3.org">
+    <name>Steal An Egg</name>
+    <description>Мобильная игра Укради Яйцо</description>
+    <author email="dev@leonik.com">Leonik</author>
+    <content src="index.html" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="Fullscreen" value="true" />
+</widget>
